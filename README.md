@@ -1,8 +1,8 @@
 # Alfred Notification Dismisser
-Alfred Workflow that helps you dismiss notifications on macOS 11 up to macOS 13.
+Alfred Workflow that helps you dismiss notifications on macOS 11 up to macOS 14.4.
 
 # Compatibility
-Checked on: macOS 11 Big Sur, macOS 12 Monterey and macOS 13 Ventura.
+Checked on: macOS 11 Big Sur, macOS 12 Monterey, macOS 13 Ventura and macOS 14 Sonoma.
 
 # Installation
 1. Download workflow from [Releases](https://github.com/bpetrynski/alfred-notification-dismisser/releases)
