@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.alfredapp.notificationdismisser</string>
+	<key>connections</key>
+	<dict>
+		<key>0DDAA976-9F29-4765-B66D-265EBDBA545F</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>54193E3E-4928-4840-8DB8-B073E21EA047</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>76FEEABE-ECB7-4210-ADDD-33B5A0729833</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>6DE29A2A-4422-4D7E-96BC-44201E5C87BA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>434E8CC6-A9F7-4717-AB73-807F04E8061F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>882A934A-C6DF-479D-AF8F-A8EC58002E09</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B59F8719-6B16-47A3-8F39-EE3C67395D3E</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>CB837EF7-2268-4871-82A3-82F53953C0CB</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>54193E3E-4928-4840-8DB8-B073E21EA047</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>76FEEABE-ECB7-4210-ADDD-33B5A0729833</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>6DE29A2A-4422-4D7E-96BC-44201E5C87BA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>434E8CC6-A9F7-4717-AB73-807F04E8061F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Bartosz Petrynski</string>
+	<key>description</key>
+	<string>Closes all notifications</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Notification Dismisser</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>function run(input, parameters) {
+
+  const appName = "";
+  const verbose = true;
+
+  const scriptName = "close_notifications_applescript";
+
+  const CLEAR_ALL_ACTION = "Clear All";
+  const CLEAR_ALL_ACTION_TOP = "Clear";
+  const CLOSE_ACTION = "Close";
+
+  const notNull = (val) =&gt; {
+    return val !== null &amp;&amp; val !== undefined;
+  }
+
+  const isNull = (val) =&gt; {
+    return !notNull(val);
+  }
+
+  const isError = (maybeErr) =&gt; {
+    return notNull(maybeErr) &amp;&amp; (maybeErr instanceof Error || maybeErr.message);
+  }
+
+  const systemVersion = () =&gt; {
+    return Application("Finder").version().split(".").map(val =&gt; parseInt(val));
+  }
+
+  const systemVersionGreaterThanOrEqualTo = (vers) =&gt; {
+    return systemVersion()[0] &gt;= vers;
+  }
+
+  const isBigSurOrGreater = () =&gt; {
+    return systemVersionGreaterThanOrEqualTo(11);
+  }
+
+  const V11_OR_GREATER = isBigSurOrGreater();
+  const APP_NAME_MATCHER_ROLE = V11_OR_GREATER ? "AXStaticText" : "AXImage";
+  const hasAppName = notNull(appName) &amp;&amp; appName !== "";
+  const appNameForLog = hasAppName ? ` [${appName}]` : "";
+
+  const logs = [];
+  const log = (message, ...optionalParams) =&gt; {
+    let message_with_prefix = `${new Date().toISOString().replace("Z", "").replace("T", " ")} [${scriptName}]${appNameForLog} ${message}`;
+    console.log(message_with_prefix, optionalParams);
+    logs.push(message_with_prefix);
+  }
+
+  const logError = (message, ...optionalParams) =&gt; {
+    if (isError(message)) {
+      let err = message;
+      message = `${err}${err.stack ? (' ' + err.stack) : ''}`;
+    }
+    log(`ERROR ${message}`, optionalParams);
+  }
+
+  const logErrorVerbose = (message, ...optionalParams) =&gt; {
+    if (verbose) {
+      logError(message, optionalParams);
+    }
+  }
+
+  const logVerbose = (message) =&gt; {
+    if (verbose) {
+      log(message);
+    }
+  }
+
+  const getLogLines = () =&gt; {
+    return logs.join("\n");
+  }
+
+  const getSystemEvents = () =&gt; {
+    let systemEvents = Application("System Events");
+    systemEvents.includeStandardAdditions = true;
+    return systemEvents;
+  }
+
+  const getNotificationCenter = () =&gt; {
+    try {
+      return getSystemEvents().processes.byName("NotificationCenter");
+    } catch (err) {
+      logError("Could not get NotificationCenter");
+      throw err;
+    }
+  }
+
+  const getNotificationCenterGroups = (retryOnError = false) =&gt; {
+    try {
+      let notificationCenter = getNotificationCenter();
+      if (notificationCenter.windows.length &lt;= 0) {
+        return [];
+      }
+      if (!V11_OR_GREATER) {
+        return notificationCenter.windows();
+      }
+      return notificationCenter.windows[0].uiElements[0].uiElements[0].uiElements();
+    } catch (err) {
+      logError("Could not get NotificationCenter groups");
+      if (retryOnError) {
+        logError(err);
+        return getNotificationCenterGroups(false);
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  const isClearButton = (description, name) =&gt; {
+    return description === "button" &amp;&amp; name === CLEAR_ALL_ACTION_TOP;
+  }
+
+  const matchesAppName = (role, value) =&gt; {
+    return role === APP_NAME_MATCHER_ROLE &amp;&amp; value.toLowerCase() === appName.toLowerCase();
+  }
+
+  const notificationGroupMatches = (group) =&gt; {
+    try {
+      let description = group.description();
+      if (V11_OR_GREATER &amp;&amp; isClearButton(description, group.name())) {
+        return true;
+      }
+      if (V11_OR_GREATER &amp;&amp; description !== "group") {
+        return false;
+      }
+      if (!V11_OR_GREATER) {
+        let matchedAppName = !hasAppName;
+        if (!matchedAppName) {
+          for (let elem of group.uiElements()) {
+            if (matchesAppName(elem.role(), elem.description())) {
+              matchedAppName = true;
+              break;
+            }
+          }
+        }
+        if (matchedAppName) {
+          return notNull(findCloseActionV10(group, -1));
+        }
+        return false;
+      }
+      if (!hasAppName) {
+        return true;
+      }
+      let firstElem = group.uiElements[0];
+      return matchesAppName(firstElem.role(), firstElem.value());
+    } catch (err) {
+      logErrorVerbose(`Caught error while checking window, window is probably closed: ${err}`);
+      logErrorVerbose(err);
+    }
+    return false;
+  }
+
+  const findCloseActionV10 = (group, closedCount) =&gt; {
+    try {
+      for (let elem of group.uiElements()) {
+        if (elem.role() === "AXButton" &amp;&amp; elem.title() === CLOSE_ACTION) {
+          return elem.actions["AXPress"];
+        }
+      }
+    } catch (err) {
+      logErrorVerbose(`(group_${closedCount}) Caught error while searching for close action, window is probably closed: ${err}`);
+      logErrorVerbose(err);
+      return null;
+    }
+    log("No close action found for notification");
+    return null;
+  }
+
+  const findCloseAction = (group, closedCount) =&gt; {
+    try {
+      if (!V11_OR_GREATER) {
+        return findCloseActionV10(group, closedCount);
+      }
+      let checkForPress = isClearButton(group.description(), group.name());
+      let clearAllAction;
+      let closeAction;
+      for (let action of group.actions()) {
+        let description = action.description();
+        if (description === CLEAR_ALL_ACTION) {
+          clearAllAction = action;
+          break;
+        } else if (description === CLOSE_ACTION) {
+          closeAction = action;
+        } else if (checkForPress &amp;&amp; description === "press") {
+          clearAllAction = action;
+          break;
+        }
+      }
+      if (notNull(clearAllAction)) {
+        return clearAllAction;
+      } else if (notNull(closeAction)) {
+        return closeAction;
+      }
+    } catch (err) {
+      logErrorVerbose(`(group_${closedCount}) Caught error while searching for close action, window is probably closed: ${err}`);
+      logErrorVerbose(err);
+      return null;
+    }
+    log("No close action found for notification");
+    return null;
+  }
+
+  const closeNextGroup = (groups, closedCount) =&gt; {
+    try {
+      for (let group of groups) {
+        if (notificationGroupMatches(group)) {
+          let closeAction = findCloseAction(group, closedCount);
+
+          if (notNull(closeAction)) {
+            try {
+              closeAction.perform();
+              return [true, 1];
+            } catch (err) {
+              logErrorVerbose(`(group_${closedCount}) Caught error while performing close action, window is probably closed: ${err}`);
+              logErrorVerbose(err);
+            }
+          }
+          return [true, 0];
+        }
+      }
+      return false;
+    } catch (err) {
+      logError("Could not run closeNextGroup");
+      throw err;
+    }
+  }
+
+  try {
+    let groupsCount = getNotificationCenterGroups(true).filter(group =&gt; notificationGroupMatches(group)).length;
+
+    if (groupsCount &gt; 0) {
+      logVerbose(`Closing ${groupsCount}${appNameForLog} notification group${(groupsCount &gt; 1 ? "s" : "")}`);
+
+      let startTime = new Date().getTime();
+      let closedCount = 0;
+      let maybeMore = true;
+      let maxAttempts = 2;
+      let attempts = 1;
+      while (maybeMore &amp;&amp; ((new Date().getTime() - startTime) &lt;= (1000 * 30))) {
+        try {
+          let closeResult = closeNextGroup(getNotificationCenterGroups(), closedCount);
+          maybeMore = closeResult[0];
+          if (maybeMore) {
+            closedCount = closedCount + closeResult[1];
+          }
+        } catch (innerErr) {
+          if (maybeMore &amp;&amp; closedCount === 0 &amp;&amp; attempts &lt; maxAttempts) {
+            log(`Caught an error before anything closed, trying ${maxAttempts - attempts} more time(s).`)
+            attempts++;
+          } else {
+            throw innerErr;
+          }
+        }
+      }
+    } else {
+      throw Error(`No${appNameForLog} notifications found...`);
+    }
+  } catch (err) {
+    logError(err);
+    logError(err.message);
+    getLogLines();
+    throw err;
+  }
+
+  return getLogLines();
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>54193E3E-4928-4840-8DB8-B073E21EA047</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>2</integer>
+				<key>hotmod</key>
+				<integer>524288</integer>
+				<key>hotstring</key>
+				<string>D</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>0DDAA976-9F29-4765-B66D-265EBDBA545F</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>tell application "System Events"
+       try
+               repeat
+                       set _groups to groups of UI element 1 of scroll area 1 of group 1 of window "Notification Center" of application process "NotificationCenter"
+                       set numGroups to number of _groups
+                       if numGroups = 0 then
+                               exit repeat
+                       end if
+                       repeat with _group in _groups
+                               set _actions to actions of _group
+                               set actionPerformed to false
+                               repeat with _action in _actions
+                                       if description of _action is in {"Close", "Clear All", "Schließen", "Alle entfernen", "Cerrar", "Borrar todo", "关闭", "清除全部", "Fermer", "Tout effacer", "Закрыть", "Очистить все", "إغلاق", "مسح الكل", "Fechar", "Limpar tudo", "閉じる", "すべてクリア", "बंद करें", "सभी हटाएं", "Zamknij", "Wyczyść wszystko", "닫기", "모두 지우기"} then
+                                               perform _action
+                                               set actionPerformed to true
+                                               exit repeat
+                                       end if
+                               end repeat
+                               if actionPerformed then
+                                       exit repeat
+                               end if
+                       end repeat
+               end repeat
+       end try
+end tell</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>76FEEABE-ECB7-4210-ADDD-33B5A0729833</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>dismiss</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Dismiss all notifications</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>CB837EF7-2268-4871-82A3-82F53953C0CB</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>tell application "System Events"
+    try
+        set _groups to groups of UI element 1 of scroll area 1 of group 1 of window "Notification Center" of application process "NotificationCenter"
+        
+        set closeActions to {"Close", "Clear All", "Schließen", "Alle entfernen", "Cerrar", "Borrar todo", "关闭", "清除全部", "Fermer", "Tout effacer", "Закрыть", "Очистить все", "إغلاق", "مسح الكل", "Fechar", "Limpar tudo", "閉じる", "すべてクリア", "बंद करें", "सभी हटाएं", "Zamknij", "Wyczyść wszystko", "닫기", "모두 지우기"}
+        
+        repeat with _group in _groups
+            set _actions to actions of _group
+            
+            repeat with _action in _actions
+                if description of _action is in closeActions then
+                    perform _action
+                    exit repeat
+                end if
+            end repeat
+        end repeat
+   -- on error errMsg
+     --   display dialog "Error: " &amp; errMsg
+    end try
+end tell</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>6DE29A2A-4422-4D7E-96BC-44201E5C87BA</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>-- Error-Tolerant Notification Center Exploration Script
+
+on safeGet(objRef, propName)
+    try
+        tell application "System Events" to tell objRef to return value of attribute propName
+    on error
+        return "&lt;unable to read " &amp; propName &amp; "&gt;"
+    end try
+end safeGet
+
+on describeElement(elem)
+    set elemInfo to {}
+    set end of elemInfo to "  Class: " &amp; (my safeGet(elem, "AXRole"))
+    set end of elemInfo to "  Description: " &amp; (my safeGet(elem, "AXDescription"))
+    set end of elemInfo to "  Name: " &amp; (my safeGet(elem, "AXTitle"))
+    set end of elemInfo to "  Role: " &amp; (my safeGet(elem, "AXRoleDescription"))
+    set end of elemInfo to "  Size: " &amp; (my safeGet(elem, "AXSize"))
+    set end of elemInfo to "  Position: " &amp; (my safeGet(elem, "AXPosition"))
+    return elemInfo
+end describeElement
+
+on exploreGroup(groupElem)
+    set groupInfo to {}
+    set end of groupInfo to "Exploring group:"
+    set groupInfo to groupInfo &amp; (my describeElement(groupElem))
+    
+    try
+        tell application "System Events" to tell groupElem
+            set subElements to every UI element
+            set end of groupInfo to "Number of subelements: " &amp; (count of subElements)
+            repeat with i from 1 to count of subElements
+                set currentElement to item i of subElements
+                set end of groupInfo to "Subelement " &amp; i &amp; ":"
+                set elemInfo to my describeElement(currentElement)
+                set groupInfo to groupInfo &amp; elemInfo
+                
+                if (my safeGet(currentElement, "AXRole")) is "AXGroup" then
+                    set groupInfo to groupInfo &amp; (my exploreGroup(currentElement))
+                end if
+            end repeat
+        end tell
+    on error errMsg
+        set end of groupInfo to "Error exploring group: " &amp; errMsg
+    end try
+    
+    return groupInfo
+end exploreGroup
+
+on run
+    set debugInfo to {}
+    
+    tell application "System Events"
+        try
+            set end of debugInfo to "Accessing System Events"
+            
+            if exists process "NotificationCenter" then
+                set end of debugInfo to "NotificationCenter process exists"
+                
+                tell process "NotificationCenter"
+                    set end of debugInfo to "Accessing NotificationCenter process"
+                    
+                    if exists window "Notification Center" then
+                        set end of debugInfo to "Notification Center window exists"
+                        set notificationWindow to window "Notification Center"
+                        
+                        set windowInfo to my describeElement(notificationWindow)
+                        set debugInfo to debugInfo &amp; windowInfo
+                        
+                        if exists group 1 of notificationWindow then
+                            set end of debugInfo to "Main group exists"
+                            set mainGroup to group 1 of notificationWindow
+                            set debugInfo to debugInfo &amp; (my exploreGroup(mainGroup))
+                        else
+                            set end of debugInfo to "No main group found in Notification Center window"
+                        end if
+                    else
+                        set end of debugInfo to "Notification Center window not found"
+                    end if
+                end tell
+            else
+                set end of debugInfo to "NotificationCenter process not found"
+            end if
+        on error errMsg
+            set end of debugInfo to "Error: " &amp; errMsg
+        end try
+    end tell
+    
+    -- Log all collected debug information
+    repeat with infoLine in debugInfo
+        log infoLine
+    end repeat
+    
+    return "Debug Script Completed"
+end run</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>2200814D-79A5-4E1A-92F0-1BF9AC7B45FB</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>-- macOS 15 Sequoia
+-- Set of close action phrases in multiple languages
+property closeActionSet : {"Close", "Clear All", "Schließen", "Alle entfernen", "Cerrar", "Borrar todo", "关闭", "清除全部", "Fermer", "Tout effacer", "Закрыть", "Очистить все", "إغلاق", "مسح الكل", "Fechar", "Limpar tudo", "閉じる", "すべてクリア", "बंद करें", "सभी हटाएं", "Zamknij", "Wyczyść wszystko", "닫기", "모두 지우기"}
+
+-- Function to perform close action on a given element
+on closeNotification(elemRef)
+    tell application "System Events"
+        try
+            set theActions to actions of elemRef
+            repeat with act in theActions
+                if description of act is in closeActionSet then
+                    perform act
+                    return true
+                end if
+            end repeat
+        end try
+    end tell
+    return false
+end closeNotification
+
+-- Function to recursively search for and close notifications
+on searchAndCloseNotifications(elemRef)
+    tell application "System Events"
+        -- If the element has subelements, search them first
+        try
+            set subElements to UI elements of elemRef
+            repeat with subElem in subElements
+                if my searchAndCloseNotifications(subElem) then
+                    return true
+                end if
+            end repeat
+        end try
+
+        -- Try to close the current element if it's a notification
+        if my closeNotification(elemRef) then
+            return true
+        end if
+    end tell
+    return false
+end searchAndCloseNotifications
+
+-- Main script to clear notifications
+on run
+    tell application "System Events"
+        if not (exists process "NotificationCenter") then
+            log "NotificationCenter process not found"
+            return
+        end if
+
+        tell process "NotificationCenter"
+            if not (exists window "Notification Center") then
+                log "Notification Center window not found"
+                return
+            end if
+
+            set notificationWindow to window "Notification Center"
+
+            -- Main loop to clear notifications
+            repeat
+                try
+                    if not my searchAndCloseNotifications(notificationWindow) then
+                        -- If no notifications were closed, we're done
+                        exit repeat
+                    end if
+
+                    -- Reduced delay to speed up the script
+                    delay 0.1
+                on error errMsg
+                    -- If an error occurs, log it and exit the loop
+                    log "Error: " &amp; errMsg
+                    exit repeat
+                end try
+            end repeat
+        end tell
+    end tell
+end run</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>434E8CC6-A9F7-4717-AB73-807F04E8061F</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>test_notifications</string>
+				<key>subtext</key>
+				<string>test_notifications</string>
+				<key>text</key>
+				<string>test_notifications</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>882A934A-C6DF-479D-AF8F-A8EC58002E09</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>#!/bin/bash
+
+# Sending notifications for Group1
+terminal-notifier -message "Message 1" -title "Title 1" -group "Group1"
+terminal-notifier -message "Message 2" -title "Title 2" -group "Group1"
+terminal-notifier -message "Message 3" -title "Title 3" -group "Group1"
+
+# Sending notifications for Group2
+terminal-notifier -message "Message 4" -title "Title 4" -group "Group2"
+terminal-notifier -message "Message 5" -title "Title 5" -group "Group2"
+terminal-notifier -message "Message 6" -title "Title 6" -group "Group2"
+terminal-notifier -message "Message 7" -title "Title 7" -group "Group2"
+
+# Sending notifications for Group3
+terminal-notifier -message "Message 8" -title "Title 8" -group "Group3"
+terminal-notifier -message "Message 9" -title "Title 9" -group "Group3"
+terminal-notifier -message "Message 10" -title "Title 10" -group "Group3"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>B59F8719-6B16-47A3-8F39-EE3C67395D3E</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string># Changelog
+
+## Version 1.4.3
+- Added support for Korean 
+
+## Version 1.4.2
+- Make the script faster
+
+## Version 1.4.1
+- Added support for macOS 15.0 Beta 6 (24A5320a)
+
+## Version 1.4
+- Added support for macOS 15 Sequoia
+
+## Version 1.3
+- Added support for macOS 14 Sonoma
+- Added notification tester
+
+## Version 1.2
+- Made the script faster
+- Added support for more languages
+
+## Version 1.1
+- Updated to [lancethomps' gist revision](https://gist.github.com/lancethomps/a5ac103f334b171f70ce2ff983220b4f/revisions#diff-83192c5d8a65f0aa536c1b7346b1d2a4bf1d05e94c5d14d0f68193952d081232)
+
+## Version 1.0
+- Initial version
+
+*Based on [lancethomps' gist](https://gist.github.com/lancethomps/a5ac103f334b171f70ce2ff983220b4f) and other scripts.*</string>
+	<key>uidata</key>
+	<dict>
+		<key>0DDAA976-9F29-4765-B66D-265EBDBA545F</key>
+		<dict>
+			<key>xpos</key>
+			<real>160</real>
+			<key>ypos</key>
+			<real>30</real>
+		</dict>
+		<key>2200814D-79A5-4E1A-92F0-1BF9AC7B45FB</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>xpos</key>
+			<real>620</real>
+			<key>ypos</key>
+			<real>460</real>
+		</dict>
+		<key>434E8CC6-A9F7-4717-AB73-807F04E8061F</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>12</integer>
+			<key>xpos</key>
+			<real>390</real>
+			<key>ypos</key>
+			<real>460</real>
+		</dict>
+		<key>54193E3E-4928-4840-8DB8-B073E21EA047</key>
+		<dict>
+			<key>xpos</key>
+			<real>390</real>
+			<key>ypos</key>
+			<real>30</real>
+		</dict>
+		<key>6DE29A2A-4422-4D7E-96BC-44201E5C87BA</key>
+		<dict>
+			<key>xpos</key>
+			<real>390</real>
+			<key>ypos</key>
+			<real>320</real>
+		</dict>
+		<key>76FEEABE-ECB7-4210-ADDD-33B5A0729833</key>
+		<dict>
+			<key>xpos</key>
+			<real>390</real>
+			<key>ypos</key>
+			<real>170</real>
+		</dict>
+		<key>882A934A-C6DF-479D-AF8F-A8EC58002E09</key>
+		<dict>
+			<key>xpos</key>
+			<real>160</real>
+			<key>ypos</key>
+			<real>605</real>
+		</dict>
+		<key>B59F8719-6B16-47A3-8F39-EE3C67395D3E</key>
+		<dict>
+			<key>xpos</key>
+			<real>390</real>
+			<key>ypos</key>
+			<real>605</real>
+		</dict>
+		<key>CB837EF7-2268-4871-82A3-82F53953C0CB</key>
+		<dict>
+			<key>xpos</key>
+			<real>160</real>
+			<key>ypos</key>
+			<real>170</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array/>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>1.4.3</string>
+	<key>webaddress</key>
+	<string>https://github.com/bpetrynski/alfred-notification-dismisser</string>
+</dict>
+</plist>

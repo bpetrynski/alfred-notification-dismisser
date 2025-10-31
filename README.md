@@ -11,10 +11,11 @@ Tested on:
 - macOS 13 Ventura
 - macOS 14 Sonoma
 - macOS 15 Sequoia
+- macOS 26 Tahoe
 
 ## Supported Languages
 
-The workflow recognizes notification dismissal buttons in the following languages: English, German, Spanish, Chinese (Simplified), French, Russian, Arabic, Portuguese, Japanese, Hindi, Polish.
+The workflow recognizes notification dismissal buttons in the following languages: English, German, Spanish, Chinese (Simplified), French, Russian, Arabic, Portuguese, Japanese, Hindi, Polish, Korean.
 
 ## Installation
 
@@ -22,6 +23,15 @@ The workflow recognizes notification dismissal buttons in the following language
 2. Double-click workflow to add to Alfred
 
 ## Changelog
+
+### Version 1.4.3
+- Added support for Korean
+
+### Version 1.4.2
+- Make the script faster
+
+### Version 1.4.1
+- Added support for macOS 15.0 Beta 6 (24A5320a)
 
 ### Version 1.4
 - Added support for macOS 15 Sequoia
@@ -31,7 +41,7 @@ The workflow recognizes notification dismissal buttons in the following language
 - Added notification tester
 
 ### Version 1.2
-- Improved script speed
+- Made the script faster
 - Added support for more languages
 
 ### Version 1.1
