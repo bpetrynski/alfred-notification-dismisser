@@ -12,6 +12,7 @@ Tested on:
 - macOS 14 Sonoma
 - macOS 15 Sequoia
 - macOS 26 Tahoe
+- macOS 27 Golden Gate
 
 ## Supported Languages
 
